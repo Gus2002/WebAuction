@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->foreignId('auction_id')->constrained();
-            $table->foreignId('bidder_id')->constrained();
+            $table->foreignId('user_id')->constrained();            ///bidderID
             $table->decimal('amount', 6, 2);
         });
     }

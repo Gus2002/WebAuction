@@ -9,8 +9,8 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 
-<body class='bg-gray-100'>
-    <nav class='p-6 bg-white flex justify-between'>
+<body class="bg-gray-200">
+    <nav class='p-6 bg-white flex justify-between mb-6'>
         <ul class="flex items-center">
             <li><a href="" class="p-3">Auctions</a></li>
             <li><a href="" class="p-3">My auctions</a></li>

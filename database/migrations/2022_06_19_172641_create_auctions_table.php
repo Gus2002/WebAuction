@@ -18,7 +18,7 @@ return new class extends Migration
             $table->datetime('end_time');
             $table->string('condition', 15);
             $table->string('type', 100);
-            $table->foreignId('seller_id')->constrained();
+            $table->foreignId('user_id')->constrained();        ///SellerID
             $table->decimal('start_price', 6, 2);
             $table->decimal('buy_now_price', 6, 2);
             $table->string('description', 500);
