@@ -12,10 +12,9 @@
 <body class="bg-gray-200">
     <nav class="p-6 bg-white flex justify-between mb-6">
         <ul class="flex items-center">
-            <li><a href="" class="p-3">Auctions</a></li>
+            <li><a href="{{ route('auctions') }}" class="p-3">Auctions</a></li>
             @auth
-                <li><a href="" class="p-3">My auctions</a></li>
-                <li><a href="" class="p-3">My bids</a></li>
+                <li><a href="{{ route('dashboard') }}" class="p-3">Dashboard</a></li>
             @endauth
         </ul>
 
