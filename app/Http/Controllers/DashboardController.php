@@ -12,6 +12,7 @@ class DashboardController extends Controller
     }
     public function index()
     {
+        dd(auth()->user()->auctions);
         return view('dashboard');
     }
 }

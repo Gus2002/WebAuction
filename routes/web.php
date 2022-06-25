@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\AuctionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,6 +27,11 @@ Route::post('/login', [LoginController::class, 'store']);
 Route::get('/register', [RegisterController::class, 'index'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
 
+/*
 Route::get('/auctions', function () {
     return view('auctions.index');
 })->name('auctions');
+*/
+Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions');
+Route::get('/new-auction', [AuctionController::class, 'create'])->name('new-auction');
+Route::post('/new-auction', [AuctionController::class, 'store']);
