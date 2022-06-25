@@ -35,3 +35,4 @@ Route::get('/auctions', function () {
 Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions');
 Route::get('/new-auction', [AuctionController::class, 'create'])->name('new-auction');
 Route::post('/new-auction', [AuctionController::class, 'store']);
+Route::get('/show/{id}', [AuctionController::class, 'show']);

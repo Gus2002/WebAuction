@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-
 use Illuminate\Http\Request;
+use App\Models\Auction;
 
 class AuctionController extends Controller
 {
     public function index()
     {
-        return view('auctions.index');
+        $auctions = Auction::paginate(1);
+        return view('auctions.index', [
+            'auctions' => $auctions
+        ]);
     }
 
     public function create()
@@ -56,5 +59,11 @@ class AuctionController extends Controller
             'image_path' => $newImageName,
         ]);
         return redirect()->route('dashboard');
+    }
+
+    public function show($id)
+    {
+        $auction = Auction::find($id);
+        return view('auctions.show_auction', compact('auction'));
     }
 }

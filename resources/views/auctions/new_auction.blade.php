@@ -145,7 +145,7 @@
 
             @endauth
             @guest
-                <p>Register or login to create an auction</p>
+                <p>Login or register to create an auction</p>
             @endguest
         </div>
     </div>
