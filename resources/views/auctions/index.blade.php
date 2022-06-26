@@ -3,8 +3,12 @@
 @section('content')
     <div class="flex justify-center">
         <div class="w-8/12 bg-white p-6 rounded-lg mb-4">
-            <ul class="mb-10">
-                <li><a href="{{ route('new-auction') }}" class="bg-blue-500 text-white px-4 py-3 rounded font-medium">Create
+            <ul class="flex items-center justify-between">
+                <li class="mb-10">
+                    <h1 class="font-bold">Auctions</h1>
+                </li>
+                <li class="mb-10"><a href="{{ route('new-auction') }}"
+                        class="bg-blue-500 text-white px-4 py-3 rounded font-medium">Create
                         an auction</a></li>
             </ul>
             <div class="mb-4">

@@ -20,11 +20,11 @@
                     <div class="mb-4">
                         <label for="type">Type:</label>
                         <select id="type" name="type" class="bg-gray-100 border-2 p-4 rounded-lg">
-                            <option value="input-device">computer</option>
+                            <option value="computer">computer</option>
                             <option value="computer-component">computer-component</option>
                             <option value="mobile-device">mobile-device</option>
                             <option value="input-device">input-device</option>
-                            <option value="input-device">output-device</option>
+                            <option value="output-device">output-device</option>
                         </select>
                         @error('type')
                             <div class="text-red-500 mt-2 text-sm">
@@ -37,7 +37,7 @@
                         <select id="condition" name="condition" class="bg-gray-100 border-2 p-4 rounded-lg">
                             <option value="brand-new">brand-new</option>
                             <option value="slightly-used">slighlty-used</option>
-                            <option value="slightly-used">used</option>
+                            <option value="used">used</option>
                         </select>
                         @error('condition')
                             <div class="text-red-500 mt-2 text-sm">
@@ -119,7 +119,7 @@
                         <label for="description">Write a short description about your item(specifications are necessary
                             according to site rules!):</label>
                         <textarea id="description" name="description" rows="4" cols="50"
-                            class="bg-gray-100 border-2 w-full p-4 rounded-lg"></textarea>
+                            class="bg-gray-100 border-2 w-full p-4 rounded-lg" value="{{ old('description') }}"></textarea>
                         @error('description')
                             <div class="text-red-500 mt-2 text-sm">
                                 {{ $message }}
