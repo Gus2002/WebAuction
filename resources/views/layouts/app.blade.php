@@ -33,6 +33,11 @@
                     <p class="px-4 py-3 mr-5 rounded-lg text-white bg-green-500">User: {{ auth()->user()->username }}</p>
                 </li>
                 <li>
+                    <p class="px-4 py-3 mr-5 rounded-lg text-white bg-green-500">Balance: {{ auth()->user()->balance }}
+                        EUR
+                    </p>
+                </li>
+                <li>
                     <form action="{{ route('logout') }}" method="post" class="pr-3 inline">
                         @csrf
                         <button type="submit" class="bg-blue-500 text-white px-4 py-3 rounded font-medium">Logout</button>

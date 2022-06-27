@@ -5,28 +5,29 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Bid extends Model
+class Transaction extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'auction_id',
-        'user_id',
+        'bid_id',
+        'buyer_id',
+        'seller_id',
         'amount',
+        'comment',
+        'rating',
     ];
 
-    public function user()
+    public function Bid()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function auction()
+    public function Auction()
     {
         return $this->belongsTo(Auction::class);
-    }
-
-    public function transaction()
-    {
-        return $this->hasOne(Transaction::class);
     }
 }
