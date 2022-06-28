@@ -29,15 +29,18 @@ Route::post('/login', [LoginController::class, 'store']);
 Route::get('/register', [RegisterController::class, 'index'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
 
-/*
-Route::get('/auctions', function () {
-    return view('auctions.index');
-})->name('auctions');
-*/
 Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions');
+
 Route::get('/new-auction', [AuctionController::class, 'create'])->name('new-auction');
 Route::post('/new-auction', [AuctionController::class, 'store']);
+
 Route::get('/show/{id}', [AuctionController::class, 'show']);
 Route::post('/show/{id}', [AuctionController::class, 'storebid']);
+
 Route::get('/create-transaction/{id}', [AuctionController::class, 'createtransaction']);
 Route::post('/create-transaction/{id}', [AuctionController::class, 'storetransaction']);
+
+Route::delete('/dashboard/{auction}', [AuctionController::class, 'destroy'])->name('destroy-auction');
+
+Route::get('/update/{id}', [AuctionController::class, 'showupdate']);
+Route::post('/update/{id}', [AuctionController::class, 'update']);

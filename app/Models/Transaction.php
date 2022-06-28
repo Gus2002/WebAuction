@@ -21,12 +21,12 @@ class Transaction extends Model
         'rating',
     ];
 
-    public function Bid()
+    public function bid()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function Auction()
+    public function auction()
     {
         return $this->belongsTo(Auction::class);
     }

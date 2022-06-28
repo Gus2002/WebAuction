@@ -17,7 +17,7 @@ class AuctionController extends Controller
     public function index()
     {
 
-        $auctions = Auction::paginate(1);
+        $auctions = Auction::orderBy('end_time', 'desc')->paginate(4);
         return view('auctions.index', [
             'auctions' => $auctions
         ]);
@@ -70,8 +70,9 @@ class AuctionController extends Controller
 
     public function show($id)
     {
-        $auction = Auction::find($id);
 
+        if (!DB::table('auctions')->where('id', '=', $id)->exists()) return redirect()->route('auctions');
+        $auction = Auction::find($id);
         //Calculate when auction ends (difference between now and auction end time)
         $now = Carbon::now()->format('Y/m/d H:i:s');
         $now = new DateTime($now);
@@ -84,8 +85,8 @@ class AuctionController extends Controller
             $highest_bid = DB::table('bids')
                 ->where('auction_id', '=', $id)
                 ->max('amount');
-            $highest_bid_fastest = DB::table('bids')->where('amount', '=', $highest_bid)->min('created_at');
-            $highest_bidder_id = DB::table('bids')->where('amount', '=', $highest_bid)->where('created_at', '=', $highest_bid_fastest)->value('user_id');
+            $highest_bid_fastest = DB::table('bids')->where('auction_id', '=', $id)->where('amount', '=', $highest_bid)->min('created_at');
+            $highest_bidder_id = DB::table('bids')->where('auction_id', '=', $id)->where('amount', '=', $highest_bid)->where('created_at', '=', $highest_bid_fastest)->value('user_id');
             $highest_bidder_username = DB::table('users')->where('id', '=', $highest_bidder_id)->value('username');
         } else {
             $highest_bid = 0;
@@ -111,9 +112,9 @@ class AuctionController extends Controller
                 ->where('auction_id', '=', $request->auction_id)
                 ->max('amount');
             if ($request->amount < $highest_bid) return redirect()->back()->with('message', 'Bid unsuccessful - your bid is lower than current highest bid');
-            $highest_bid_fastest = DB::table('bids')->where('amount', '=', $highest_bid)->min('created_at');
-            $highest_bidder_id = DB::table('bids')->where('amount', '=', $highest_bid)->where('created_at', '=', $highest_bid_fastest)->value('user_id');
-            if ($highest_bidder_id == auth()->user()->id) return redirect()->back()->with('message', 'Bid unsuccessful - you already are the highest bidder');
+            //$highest_bid_fastest = DB::table('bids')->where('amount', '=', $highest_bid)->min('created_at');
+            //$highest_bidder_id = DB::table('bids')->where('amount', '=', $highest_bid)->where('created_at', '=', $highest_bid_fastest)->value('user_id');
+            //if ($highest_bidder_id == auth()->user()->id) return redirect()->back()->with('message', 'Bid unsuccessful - you already are the highest bidder');
         }
 
         if ($request->amount < $auction->start_price) return redirect()->back()->with('message', 'Bid unsuccessful - your bid is lower than starting price');
@@ -123,17 +124,18 @@ class AuctionController extends Controller
             'user_id' => auth()->user()->id,
             'amount' => $request->amount,
         ]);
-        return redirect()->back()->with('message', 'Bid Successful !');
+        return redirect()->back()->with('message', 'Bid successful');
     }
 
     public function createtransaction($id)
     {
+        if (!auth()->check()) return redirect()->route('login');
         $auction = Auction::find($id);
         $highest_bid = DB::table('bids')
             ->where('auction_id', '=', $auction->id)
             ->max('amount');
-        $highest_bid_fastest = DB::table('bids')->where('amount', '=', $highest_bid)->min('created_at');
-        $highest_bidder_id = DB::table('bids')->where('amount', '=', $highest_bid)->where('created_at', '=', $highest_bid_fastest)->value('user_id');
+        $highest_bid_fastest = DB::table('bids')->where('auction_id', '=', $id)->where('amount', '=', $highest_bid)->min('created_at');
+        $highest_bidder_id = DB::table('bids')->where('auction_id', '=', $id)->where('amount', '=', $highest_bid)->where('created_at', '=', $highest_bid_fastest)->value('user_id');
 
         $now = Carbon::now()->format('Y/m/d H:i:s');
         $now = new DateTime($now);
@@ -151,8 +153,8 @@ class AuctionController extends Controller
         $highest_bid = DB::table('bids')
             ->where('auction_id', '=', $auction->id)
             ->max('amount');
-        $highest_bid_fastest = DB::table('bids')->where('amount', '=', $highest_bid)->min('created_at');
-        $highest_bid_id = DB::table('bids')->where('amount', '=', $highest_bid)->where('created_at', '=', $highest_bid_fastest)->value('id');
+        $highest_bid_fastest = DB::table('bids')->where('auction_id', '=', $request->auction_id)->where('amount', '=', $highest_bid)->min('created_at');
+        $highest_bid_id = DB::table('bids')->where('auction_id', '=', $request->auction_id)->where('amount', '=', $highest_bid)->where('created_at', '=', $highest_bid_fastest)->value('id');
 
         Transaction::create([
             'auction_id' => $request->auction_id,
@@ -168,15 +170,48 @@ class AuctionController extends Controller
         $seller->balance = ($seller->balance + $highest_bid);
         $seller->save();
 
-        return view('dashboard');
+        return redirect('/show/' . $request->auction_id);
     }
 
-    /*
-    public function destroy(Request $request)
+    public function showupdate($id)
     {
-
-        Auction::findOrFail($id)->delete();
-        return redirect('/auctions');
+        $auction = Auction::find($id);
+        if (!auth()->check() || auth()->user()->id != $auction->user_id) return redirect()->route('auctions');
+        return view('auctions.update', compact('auction'));
     }
-    */
+
+    public function update(Request $request)
+    {
+        $this->validate($request, [
+            'auction_id' => 'required|exists:auctions,id',
+            'name' => 'required|string|max:191',
+            'type' => 'required|string|max:100',
+            'condition' => 'required|string|max:15',
+            'start_price' => 'required|numeric|min:1|max:9999',
+            'buy_now_price' => 'required|numeric|gt:start_price|max:9999.99',
+            'description' => 'required',
+        ]);
+        $auction = Auction::find($request->auction_id);
+        if (!auth()->check() || auth()->user()->id != $auction->user_id) return redirect()->route('auctions');
+        if ($auction->bids->toArray()) return redirect()->route('dashboard')->with('message', 'Update failed - auction has bids');
+        $auction->name = $request->name;
+        $auction->type = $request->type;
+        $auction->condition = $request->condition;
+        $auction->start_price = $request->start_price;
+        $auction->buy_now_price = $request->buy_now_price;
+        $auction->description = $request->description;
+        if ($request->end_now) {
+            $end_time_unix = time() + 20;
+            $auction->end_time = gmdate('Y/m/d H:i:s', $end_time_unix);
+        }
+        $auction->save();
+        return redirect()->route('dashboard')->with('message', 'Update successful');
+    }
+
+    public function destroy(Auction $auction)
+    {
+        if (!auth()->check() || $auction->user->id != auth()->user()->id) return redirect()->route('auctions');
+        $auction->delete();
+        return back();
+    }
 }
